@@ -1,3 +1,9 @@
+form(action="/todos", method="GET")
+  input(type="text", name="q")
+  button Search
+form(action="/todos/create", method="POST")
+  input(type="text", name="text")
+  button Create
 ul
   each x in todoList
-    li= x.todo
+    li= x.text
