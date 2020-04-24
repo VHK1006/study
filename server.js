@@ -10,14 +10,11 @@ const pug = require("pug");
 app.set("view engine", "pug");
 app.set("views", "./views");
 
-app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-
 var todoList = [
   { id: 1, todo: "Đi chợ" },
-  { id: 1, todo: "Nấu cơm" },
-  { id: 1, todo: "Rửa bát" },
-  { id: 1, todo: "Học tại CodersX" }
+  { id: 2, todo: "Nấu cơm" },
+  { id: 3, todo: "Rửa bát" },
+  { id: 4, todo: "Học tại CodersX" }
 ];
 
 // https://expressjs.com/en/starter/basic-routing.html
@@ -27,7 +24,7 @@ app.get("/", (request, response) => {
 
 //app.get("/todos", (request, response) => {
 //  response.render("index", {
-//todoList: todoList;
+//    todoList: todoList
 //  });
 //});
 
@@ -45,11 +42,6 @@ app.get("/todos", function(request, response) {
       todoList: matchTodoList
     });
   }
-});
-
-app.post("/todos/create", function(request, response) {
-  todoList.push(request.body);
-  response.redirect("back");
 });
 
 // listen for requests :)
