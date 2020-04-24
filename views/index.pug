@@ -6,4 +6,7 @@ form(action="/todos/create", method="POST")
   button Create
 ul
   each x in todoList
-    li= x.text
+    li
+      span= x.text
+      span &nbsp
+      a(href='/todos/' + x.id + '/delete') Xóa

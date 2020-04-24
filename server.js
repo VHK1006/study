@@ -6,7 +6,7 @@
 const express = require("express");
 const app = express();
 const pug = require("pug");
-
+var shortid = require("shortid");
 var low = require("lowdb");
 var FileSync = require("lowdb/adapters/FileSync");
 
@@ -51,7 +51,16 @@ app.get("/todos", function(request, response) {
   }
 });
 
+app.get("/todos/:id/delete", function(request, response) {
+  var id = request.params.id;
+  db.get("todos")
+    .remove({ id: id })
+    .write();
+  response.redirect("/todos");
+});
+
 app.post("/todos/create", function(request, response) {
+  request.body.id = shortid.generate();
   db.get("todos")
     .push(request.body)
     .write();
