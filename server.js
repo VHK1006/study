@@ -24,7 +24,7 @@ app.get("/", (request, response) => {
 
 //app.get("/todos", (request, response) => {
 //  response.render("index", {
-//todoList: todoList;
+//    todoList: todoList
 //  });
 //});
 
