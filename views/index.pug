@@ -1,12 +1,25 @@
-form(action="/todos", method="GET")
+h1 Books
+a(href="/books/create") New
+br
+a(href="/users") Users
+form(action="/books", method="GET")
   input(type="text", name="q")
   button Search
-form(action="/todos/create", method="POST")
-  input(type="text", name="text")
-  button Create
+form(action="/books/update", method="GET")
+  strong Update Title
+  br
+  label Title
+  br
+  input(type="text", name="title")
+  br
+  label New Title
+  br
+  input(type="text", name="newtitle")
+  br
+  button Update
 ul
-  each x in todoList
+  each book in books
     li
-      span= x.text
+      span= book.title
       span &nbsp
-      a(href='/todos/' + x.id + '/delete') Xóa
+      a(href='/books/' + book.id + '/delete') Delete

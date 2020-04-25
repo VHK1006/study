@@ -1,0 +1,32 @@
+h1 Users
+a(href="/") Home
+span &nbsp
+a(href="/users/create") New
+form(action="/users", method="GET")
+  input(type="text", name="q")
+  button Search
+form(action="/users/update", method="GET")
+  strong Update User
+  br
+  label Name
+  br
+  input(type="text", name="name")
+  br
+  label Phone Number
+  br
+  input(type="text", name="phonenumber")
+  br
+  label New Phone Number
+  br
+  input(type="text", name="newphonenumber")
+  br
+  button Update
+ul
+  each user in users
+    li
+      label Name: 
+      span= user.name
+      br
+      label Phone Number: 
+      span= user.phonenumber
+      a(href='/users/' + user.id + '/delete') Delete

@@ -5,7 +5,7 @@
 // but feel free to use whatever libraries or frameworks you'd like through `package.json`.
 const express = require("express");
 const app = express();
-const pug = require("pug");
+var pug = require("pug");
 var shortid = require("shortid");
 var low = require("lowdb");
 var FileSync = require("lowdb/adapters/FileSync");
@@ -19,55 +19,125 @@ app.set("views", "./views");
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
-db.defaults({ todos: [] }).write();
+db.defaults({ books: [], users: [] }).write();
 
-// https://expressjs.com/en/starter/basic-routing.html
-app.get("/", (request, response) => {
-  response.send("I love CodersX");
+app.get("/", function(request, response) {
+  response.render("index", {
+    books: db.get("books").value()
+  });
 });
 
-//app.get("/todos", (request, response) => {
-//  response.render("index", {
-//todoList: todoList;
-//  });
-//});
-
-app.get("/todos", function(request, response) {
+//find
+app.get("/books", function(request, response) {
   var q = request.query.q;
   if (q === undefined) {
     response.render("index", {
-      todoList: db.get("todos").value()
+      books: db.get("books").value()
     });
   } else {
-    var matchTodoList = db
-      .get("todos")
+    var matchBook = db
+      .get("books")
       .value()
-      .filter(function(todo) {
-        return todo.text.toLowerCase().indexOf(q.toLowerCase()) !== -1;
+      .filter(function(book) {
+        return book.title.toLowerCase().indexOf(q.toLowerCase()) !== -1;
       });
     response.render("index", {
-      todoList: matchTodoList
+      books: matchBook
     });
   }
 });
 
-app.get("/todos/:id/delete", function(request, response) {
+//delete
+app.get("/books/:id/delete", function(request, response) {
   var id = request.params.id;
-  db.get("todos")
+  db.get("books")
     .remove({ id: id })
     .write();
-  response.redirect("/todos");
+  response.redirect("/books");
 });
 
-app.post("/todos/create", function(request, response) {
+//update
+app.get("/books/update", function(request, response) {
+  var title = request.query.title;
+  var newTitle = request.query.newtitle;
+  db.get("books")
+    .find({ title: title })
+    .assign({ title: newTitle })
+    .write();
+  response.redirect("back");
+});
+
+//create
+app.get("/books/create", function(request, response) {
+  response.render("createbook");
+});
+
+app.post("/books/create", function(request, response) {
   request.body.id = shortid.generate();
-  db.get("todos")
+  db.get("books")
     .push(request.body)
+    .write();
+  response.redirect("/books");
+});
+
+//find user
+app.get("/users", function(request, response) {
+  var q = request.query.q;
+  if (q === undefined) {
+    response.render("users", {
+      users: db.get("users").value()
+    });
+  } else {
+    var matchUser = db
+      .get("users")
+      .value()
+      .filter(function(user) {
+        return (
+          user.name.toLowerCase().indexOf(q.toLowerCase()) !== -1 ||
+          user.phonenumber.indexOf(q) !== -1
+        );
+      });
+    response.render("users", {
+      users: matchUser
+    });
+  }
+});
+
+//delete user
+app.get("/users/:id/delete", function(request, response) {
+  var id = request.params.id;
+  db.get("users")
+    .remove({ id: id })
+    .write();
+  response.redirect("/users");
+});
+
+//create user
+app.get("/users/create", function(request, response) {
+  response.render("createuser");
+});
+
+app.post("/users/create", function(request, response) {
+  request.body.id = shortid.generate();
+  db.get("users")
+    .push(request.body)
+    .write();
+  response.redirect("/users");
+});
+
+//update user
+app.get("/users/update", function(request, response) {
+  var name = request.query.name;
+  var phoneNumber = request.query.phonenumber;
+  var newPhoneNumber = request.query.newphonenumber;
+  db.get("users")
+    .find({ phonenumber: phoneNumber })
+    .assign({ phonenumber: newPhoneNumber })
     .write();
   response.redirect("back");
 });
 
 // listen for requests :)
-app.listen(process.env.PORT, () => {
-  console.log("Server listening on port " + process.env.PORT);
+const listener = app.listen(process.env.PORT, () => {
+  console.log("Your app is listening on port " + listener.address().port);
 });
