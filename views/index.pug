@@ -1,3 +1,12 @@
+form(action="/todos", method="GET")
+  input(type="text", name="q")
+  button Search
+form(action="/todos/create", method="POST")
+  input(type="text", name="text")
+  button Create
 ul
   each x in todoList
-    li= x.todo
+    li
+      span= x.text
+      span &nbsp
+      a(href='/todos/' + x.id + '/delete') Xóa

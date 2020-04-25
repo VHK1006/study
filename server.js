@@ -6,16 +6,20 @@
 const express = require("express");
 const app = express();
 const pug = require("pug");
+var shortid = require("shortid");
+var low = require("lowdb");
+var FileSync = require("lowdb/adapters/FileSync");
+
+var adapter = new FileSync("db.json");
+var db = low(adapter);
 
 app.set("view engine", "pug");
 app.set("views", "./views");
 
-var todoList = [
-  { id: 1, todo: "Đi chợ" },
-  { id: 2, todo: "Nấu cơm" },
-  { id: 3, todo: "Rửa bát" },
-  { id: 4, todo: "Học tại CodersX" }
-];
+app.use(express.json()); // for parsing application/json
+app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+db.defaults({ todos: [] }).write();
 
 // https://expressjs.com/en/starter/basic-routing.html
 app.get("/", (request, response) => {
@@ -24,7 +28,7 @@ app.get("/", (request, response) => {
 
 //app.get("/todos", (request, response) => {
 //  response.render("index", {
-//    todoList: todoList
+//todoList: todoList;
 //  });
 //});
 
@@ -32,16 +36,35 @@ app.get("/todos", function(request, response) {
   var q = request.query.q;
   if (q === undefined) {
     response.render("index", {
-      todoList: todoList
+      todoList: db.get("todos").value()
     });
   } else {
-    var matchTodoList = todoList.filter(function(todo) {
-      return todo.todo.toLowerCase().indexOf(q.toLowerCase()) !== -1;
-    });
+    var matchTodoList = db
+      .get("todos")
+      .value()
+      .filter(function(todo) {
+        return todo.text.toLowerCase().indexOf(q.toLowerCase()) !== -1;
+      });
     response.render("index", {
       todoList: matchTodoList
     });
   }
+});
+
+app.get("/todos/:id/delete", function(request, response) {
+  var id = request.params.id;
+  db.get("todos")
+    .remove({ id: id })
+    .write();
+  response.redirect("/todos");
+});
+
+app.post("/todos/create", function(request, response) {
+  request.body.id = shortid.generate();
+  db.get("todos")
+    .push(request.body)
+    .write();
+  response.redirect("back");
 });
 
 // listen for requests :)
